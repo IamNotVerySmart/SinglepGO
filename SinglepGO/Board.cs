@@ -2,28 +2,12 @@
 {
     internal class Board
     {
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //make fing class for those i cant look at them anymore!!!!!!!
-        //player and enemy at least should have own classes
-        //make fing class for those i cant look at them anymore!!!!!!!
-        private string[,] board = new string[10, 10];
+        Player player = new Player();
+        Enemy enemy = new Enemy();
+        public string[,] board = new string[10, 10];
         Random rnd = new Random();
-        private int[] playerPosition = new int[2];
-        private int[] enemy1Position = new int[2];
-        private int[] enemy2Position = new int[2];
         public bool isGameOn = true;
         private bool boardCreated = false;
-        private string[] correctInputs = { "h", "j", "k", "l", "hj", "jh", "hk", "kh", "jl", "lj", "lk", "kl" };
-        private bool positionChange = false;
-        private bool playerTurn = true; // decide who starts (true = player start)
-        private bool enemy1killed = false;
-        private bool enemy2killed = false;
 
         public Board()
         {
@@ -38,27 +22,28 @@
         //generates board and works as respawn for enemy
         public void generateBoard()
         {
-            while (!boardCreated || enemy1killed || enemy2killed)
+            while (!boardCreated || enemy.enemy1Killed || enemy.enemy2Killed)
             {
-                if (!boardCreated)
+                if (!boardCreated || player.playerKilled)
                 {
-                    playerPosition[0] = board.GetLength(0) - 1;
-                    playerPosition[1] = rnd.Next(board.GetLength(1));
+                    player.playerPosition[0] = board.GetLength(0) - 1;
+                    player.playerPosition[1] = rnd.Next(board.GetLength(1));
+                    player.playerKilled = false;
                 }
-                if (!boardCreated || enemy1killed)
+                if (!boardCreated || enemy.enemy1Killed)
                 {
-                    enemy1Position[0] = 1;
-                    enemy1Position[1] = rnd.Next(board.GetLength(1));
-                    enemy1killed = false;
+                    enemy.enemy1Position[0] = 1;
+                    enemy.enemy1Position[1] = rnd.Next(board.GetLength(1));
+                    enemy.enemy1Killed = false;
                 }
-                if (!boardCreated || enemy2killed)
+                if (!boardCreated || enemy.enemy2Killed)
                 {
-                    enemy2Position[0] = 1;
-                    while (enemy1Position[1] == enemy2Position[1]) 
-                    { 
-                        enemy2Position[1] = rnd.Next(board.GetLength(1));
+                    enemy.enemy2Position[0] = 1;
+                    while (enemy.enemy1Position[1] == enemy.enemy2Position[1]) 
+                    {
+                        enemy.enemy2Position[1] = rnd.Next(board.GetLength(1));
                     }
-                    enemy2killed = false;
+                    enemy.enemy2Killed = false;
                 }
                 boardCreated = true;
             }
@@ -67,15 +52,15 @@
             {
                 for (int j = 0; j < board.GetLength(1); j++)
                 {
-                    if (i == playerPosition[0] && j == playerPosition[1])
+                    if (i == player.playerPosition[0] && j == player.playerPosition[1])
                     {
                         board[i, j] = "@";
                     }
-                    if (i == enemy1Position[0] && j == enemy1Position[1])
+                    if (i == enemy.enemy1Position[0] && j == enemy.enemy1Position[1])
                     {
                         board[i, j] = "#";
                     }
-                    if (i == enemy2Position[0] && j == enemy2Position[1])
+                    if (i == enemy.enemy2Position[0] && j == enemy.enemy2Position[1])
                     {
                         board[i, j] = "#";
                     }
@@ -84,154 +69,19 @@
                 Console.WriteLine();
             }
         }
-        //if player can move read input from user and moves acordingly
-        public void movePlayerPosition()
-        {
-            if (playerTurn)
-            { 
-                Console.WriteLine("To move you simply write direction in which you want to move: \n(k - up, h - left, j - down, l - right)");
-                string input = Console.ReadLine()!;
-                if (input == "")
-                {
-                    Console.WriteLine("No input detected, please try again.");
-                    movePlayerPosition();
-                }
-                else
-                {
-                    foreach (string ci in correctInputs)
-                    {
-                        if (input == ci)
-                        {
-                            if (input == "k")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] -= 1;
-                                positionChange = true;
-                            }
-                            if (input == "j")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] += 1;
-                                positionChange = true;
-                            }
-                            if (input == "h")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[1] -= 1;
-                                positionChange = true;
-                            }
-                            if (input == "l")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[1] += 1;
-                                positionChange = true;
-                            }
-                            if (input == "hj")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] += 1;
-                                playerPosition[1] -= 1;
-                                positionChange = true;
-                            }
-                            if (input == "jh")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] += 1;
-                                playerPosition[1] -= 1;
-                                positionChange = true;
-                            }
-                            if (input == "hk")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] -= 1;
-                                playerPosition[1] -= 1;
-                                positionChange = true;
-                            }
-                            if (input == "kh")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] -= 1;
-                                playerPosition[1] -= 1;
-                                positionChange = true;
-                            }
-                            if (input == "lj")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] += 1;
-                                playerPosition[1] += 1;
-                                positionChange = true;
-                            }
-                            if (input == "jl")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] += 1;
-                                playerPosition[1] += 1;
-                                positionChange = true;
-                            }
-                            if (input == "lk")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] -= 1;
-                                playerPosition[1] += 1;
-                                positionChange = true;
-                            }
-                            if (input == "kl")
-                            {
-                                board[playerPosition[0], playerPosition[1]] = "-";
-                                playerPosition[0] -= 1;
-                                playerPosition[1] += 1;
-                                positionChange = true;
-                            }
-
-
-                        }
-                    }
-                    if (!positionChange)
-                    {
-                        Console.WriteLine("Wrong character input, please try again.");
-
-                        movePlayerPosition();
-                    }
-                    positionChange = false;
-                }
-                playerTurn = false;
-            }
-        }
-        //moves enemy if player made move
-        public void moveEnemyPosition()
-        {
-            if (!playerTurn)
-            {
-                board[enemy1Position[0], enemy1Position[1]] = "-";
-                enemy1Position[0] += 1;
-                board[enemy2Position[0], enemy2Position[1]] = "-";
-                enemy2Position[0] += 1;
-                playerTurn = true;
-            }
-        }
-        //checks if game ended or if position of player is same as enemy
-        //if so marks enemy as killed and generate board again
-        public void checkPositions()
-        {
-            if (playerPosition[0] <= 0)
+        
+        //checks if player or enemy has reached the end
+        public void checkWinConditions()
+        { 
+            if (player.playerPosition[0] <= 0)
             {
                 Console.WriteLine("CONGRATULATIONS PLAYER WON!!!");
                 isGameOn = false;
             }
-            if (enemy1Position[0] >= 9 || enemy2Position[0] >= 9)
+            if (enemy.enemy1Position[0] >= 9 || enemy.enemy2Position[0] >= 9)
             {
                 Console.WriteLine("good times never last... lybd lubdy laby lib");
                 isGameOn = false;
-            }
-            if (playerPosition[0] == enemy1Position[0] && playerPosition[1] == enemy1Position[1])
-            {
-                enemy1killed = true;
-                generateBoard();
-            }
-            if (playerPosition[0] == enemy2Position[0] && playerPosition[1] == enemy2Position[1])
-            {
-                enemy2killed = true;
-                generateBoard();
             }
         }
     }
