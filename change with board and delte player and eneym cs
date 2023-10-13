@@ -1,0 +1,258 @@
+namespace SinglepGO
+{
+    internal class Board
+    {
+        public string[,] board = new string[10, 10];
+        Random rnd = new Random();
+        public bool isGameOn = true;
+        private bool boardCreated = false;
+
+        public Board()
+        {
+            for (int i = 0; i < board.GetLength(0); i++)
+            {
+                for (int j = 0; j < board.GetLength(1); j++)
+                {
+                    board[i, j] = "-";
+                }
+            }
+        }
+        //generates board and works as respawn for enemy
+        public void generateBoard()
+        {
+            while (!boardCreated || enemy1Killed || enemy2Killed)
+            {
+                if (!boardCreated || playerKilled)
+                {
+                    playerPosition[0] = board.GetLength(0) - 1;
+                    playerPosition[1] = rnd.Next(board.GetLength(1));
+                    playerKilled = false;
+                }
+                if (!boardCreated || enemy1Killed)
+                {
+                    enemy1Position[0] = 1;
+                    enemy1Position[1] = rnd.Next(board.GetLength(1));
+                    enemy1Killed = false;
+                }
+                if (!boardCreated || enemy2Killed)
+                {
+                    enemy2Position[0] = 1;
+                    while (enemy1Position[1] == enemy2Position[1])
+                    {
+                        enemy2Position[1] = rnd.Next(board.GetLength(1));
+                    }
+                    enemy2Killed = false;
+                }
+                boardCreated = true;
+            }
+            Console.Clear();
+            for (int i = 0; i < board.GetLength(0); i++)
+            {
+                for (int j = 0; j < board.GetLength(1); j++)
+                {
+                    if (i == playerPosition[0] && j == playerPosition[1])
+                    {
+                        board[i, j] = "@";
+                    }
+                    if (i == enemy1Position[0] && j == enemy1Position[1])
+                    {
+                        board[i, j] = "#";
+                    }
+                    if (i == enemy2Position[0] && j == enemy2Position[1])
+                    {
+                        board[i, j] = "#";
+                    }
+                    Console.Write("[" + board[i, j] + "]" + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        //checks if player or enemy has reached the end
+        public void checkWinConditions()
+        {
+            if (playerPosition[0] <= 0)
+            {
+                Console.WriteLine("CONGRATULATIONS PLAYER WON!!!");
+                isGameOn = false;
+            }
+            if (enemy1Position[0] >= 9 || enemy2Position[0] >= 9)
+            {
+                Console.WriteLine("good times never last... lybd lubdy laby lib");
+                isGameOn = false;
+            }
+        }
+        public int[] playerPosition = new int[2];
+        private string[] correctInputs = { "h", "j", "k", "l", "hj", "jh", "hk", "kh", "jl", "lj", "lk", "kl" };
+        private bool positionChange = false;
+        public bool playerTurn = true; // decide who starts (true = player start)
+        public bool playerKilled = false;
+
+        //if player can move read input from user and moves acordingly
+        public void Move()
+        {
+            if (playerTurn)
+            {
+                Console.WriteLine("To move you simply write direction in which you want to move: \n(k - up, h - left, j - down, l - right)");
+                string input = Console.ReadLine()!;
+                if (input == "")
+                {
+                    Console.WriteLine("No input detected, please try again.");
+                    Move();
+                }
+                else
+                {
+                    foreach (string ci in correctInputs)
+                    {
+                        if (input == ci)
+                        {
+                            if (input == "k")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] -= 1;
+                                positionChange = true;
+                            }
+                            if (input == "j")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] += 1;
+                                positionChange = true;
+                            }
+                            if (input == "h")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[1] -= 1;
+                                positionChange = true;
+                            }
+                            if (input == "l")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[1] += 1;
+                                positionChange = true;
+                            }
+                            if (input == "hj")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] += 1;
+                                playerPosition[1] -= 1;
+                                positionChange = true;
+                            }
+                            if (input == "jh")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] += 1;
+                                playerPosition[1] -= 1;
+                                positionChange = true;
+                            }
+                            if (input == "hk")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] -= 1;
+                                playerPosition[1] -= 1;
+                                positionChange = true;
+                            }
+                            if (input == "kh")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] -= 1;
+                                playerPosition[1] -= 1;
+                                positionChange = true;
+                            }
+                            if (input == "lj")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] += 1;
+                                playerPosition[1] += 1;
+                                positionChange = true;
+                            }
+                            if (input == "jl")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] += 1;
+                                playerPosition[1] += 1;
+                                positionChange = true;
+                            }
+                            if (input == "lk")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] -= 1;
+                                playerPosition[1] += 1;
+                                positionChange = true;
+                            }
+                            if (input == "kl")
+                            {
+                                board[playerPosition[0], playerPosition[1]] = "-";
+                                playerPosition[0] -= 1;
+                                playerPosition[1] += 1;
+                                positionChange = true;
+                            }
+
+
+                        }
+                    }
+                    if (!positionChange)
+                    {
+                        Console.WriteLine("Wrong character input, please try again.");
+
+                        Move();
+                    }
+                    positionChange = false;
+                }
+                if (playerPosition[0] == enemy1Position[0] && playerPosition[1] == enemy1Position[1])
+                {
+                    enemy1Killed = true;
+                    generateBoard();
+                }
+                if (playerPosition[0] == enemy2Position[0] && playerPosition[1] == enemy2Position[1])
+                {
+                    enemy2Killed = true;
+                    generateBoard();
+                }
+                playerTurn = false;
+            }
+        }
+        public int[] enemy1Position = new int[2];
+        public int[] enemy2Position = new int[2];
+        public bool enemy1Killed = false;
+        public bool enemy2Killed = false;
+
+        //moves enemy if player made move
+        public void moveEnemyPosition()
+        {
+            if (!playerTurn)
+            {
+                if (enemy1Position[0] < playerPosition[0])
+                {
+                    enemy1Position[0]++;
+                }
+                if (enemy1Position[0] > playerPosition[0])
+                {
+                    enemy1Position[0]--;
+                }
+                if (enemy1Position[1] < playerPosition[1])
+                {
+                    enemy1Position[1]++;
+                }
+                if (enemy1Position[1] > playerPosition[1])
+                {
+                    enemy1Position[1]--;
+                }
+                board[enemy1Position[0], enemy1Position[1]] = "-";
+                enemy1Position[0] += 1;
+                board[enemy2Position[0], enemy2Position[1]] = "-";
+                enemy2Position[0] += 1;
+                playerTurn = true;
+                if (playerPosition[0] == enemy1Position[0] && playerPosition[1] == enemy1Position[1])
+                {
+                    playerKilled = true;
+                    generateBoard();
+                }
+                if (playerPosition[0] == enemy2Position[0] && playerPosition[1] == enemy2Position[1])
+                {
+                    playerKilled = true;
+                    generateBoard();
+                }
+            }
+        }
+    }
+}
