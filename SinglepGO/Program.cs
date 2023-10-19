@@ -2,8 +2,6 @@
 using SinglepGO;
 
 Board board = new Board();
-Player player = new Player();
-Enemy enemy = new Enemy();
 
 while (board.isGameOn)
 {
@@ -11,8 +9,10 @@ while (board.isGameOn)
     board.checkWinConditions();
     if (board.isGameOn)
     {
-        player.Move();
-        enemy.moveEnemyPosition();
+        board.generateBoard();
+        board.Move();
+        //board.MoveEnemyPosition();
+        board.CheckIfPlayerKilled();
     }
 }
 /***********************************************************
@@ -20,8 +20,5 @@ while (board.isGameOn)
  *      Trzeba dodać jeszcze real-time poruszanie 
  *      oraz dać możliwość 2 ruchów z czekaniem na ruch gracza
  *      bo narazie nie da sie tego wygrać.
- *      Oraz zrobić aby przeciwnicy poruszali się w strone gracza.
- *
- *
  *
  **********************************************************/
