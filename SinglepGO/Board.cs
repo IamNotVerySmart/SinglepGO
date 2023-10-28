@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+
 using System.Timers;
 
 namespace SinglepGO
@@ -19,7 +19,7 @@ namespace SinglepGO
         public int[] enemy2Position = new int[2];
         public bool enemy1Killed = false;
         public bool enemy2Killed = false;
-        public bool bonus = false;
+        public int bonus = 0;
         public CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         public Board()
@@ -31,6 +31,7 @@ namespace SinglepGO
                     board[i, j] = "-";
                 }
             }
+            generateBoard();
             System.Timers.Timer timer = new System.Timers.Timer(2000);
             timer.Elapsed += TimerElapsed;
             timer.AutoReset = true;
@@ -40,7 +41,6 @@ namespace SinglepGO
         //generates board and works as respawn for enemy
         public void generateBoard()
         {
-            CheckIfPlayerKilled();
             if (!boardCreated || enemy1Killed || enemy2Killed || playerKilled)
             {
                 if (!boardCreated || playerKilled)
@@ -90,18 +90,17 @@ namespace SinglepGO
                 Console.WriteLine();
                 boardCreated = true;
             }
+            
             //MoveEnemyPosition();
             //CheckIfPlayerKilled();
-            if(bonus)
-            {
-                cancellationTokenSource.Cancel();
-                Move();
-                bonus = false;
-                cancellationTokenSource = new CancellationTokenSource();
-            }
-            Move();
-
-            checkWinConditions();
+            //if(bonus)
+            //{
+            //    cancellationTokenSource.Cancel();
+            //    Move();
+            //    bonus = false;
+            //    cancellationTokenSource = new CancellationTokenSource();
+            //}
+            //Thread.Sleep(100);
         }
 
         //checks if player or enemy has reached the end
@@ -142,69 +141,117 @@ namespace SinglepGO
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] -= 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "j":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] += 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "h":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[1] -= 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "l":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[1] += 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "hj":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] += 1;
                         playerPosition[1] -= 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "jh":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] += 1;
                         playerPosition[1] -= 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "hk":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] -= 1;
                         playerPosition[1] -= 1;
                         positionChange = true;
+                        if(bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "kh":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] -= 1;
                         playerPosition[1] -= 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "lj":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] += 1;
                         playerPosition[1] += 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "jl":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] += 1;
                         playerPosition[1] += 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "lk":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] -= 1;
                         playerPosition[1] += 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                     case "kl":
                         board[playerPosition[0], playerPosition[1]] = "-";
                         playerPosition[0] -= 1;
                         playerPosition[1] += 1;
                         positionChange = true;
+                        if (bonus > 0)
+                        {
+                            bonus--;
+                        }
                         break;
                 }
                 if (!positionChange)
@@ -218,15 +265,16 @@ namespace SinglepGO
             if (playerPosition[0] == enemy1Position[0] && playerPosition[1] == enemy1Position[1])
             {
                 enemy1Killed = true;
-                bonus = true;
+                bonus += 2;
                 generateBoard();
             }
             if (playerPosition[0] == enemy2Position[0] && playerPosition[1] == enemy2Position[1])
             {
                 enemy2Killed = true;
-                bonus = true;
+                bonus += 2;
                 generateBoard();
             }
+            generateBoard();
         }
 
         //moves enemy if player made move
@@ -234,6 +282,7 @@ namespace SinglepGO
         {
             MoveEnemy(enemy1Position, 0);
             MoveEnemy(enemy2Position, 1);
+            CheckIfPlayerKilled();
             generateBoard();
         }
 
@@ -293,9 +342,12 @@ namespace SinglepGO
 
         public void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!cancellationTokenSource.Token.IsCancellationRequested)
+            if (isGameOn && !cancellationTokenSource.Token.IsCancellationRequested)
             {
-                MoveEnemyPosition();
+                if (bonus == 0)
+                {
+                    MoveEnemyPosition();
+                }
             }
         }
     }
