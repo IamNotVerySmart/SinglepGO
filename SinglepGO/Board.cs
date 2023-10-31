@@ -90,17 +90,6 @@ namespace SinglepGO
                 Console.WriteLine();
                 boardCreated = true;
             }
-            
-            //MoveEnemyPosition();
-            //CheckIfPlayerKilled();
-            //if(bonus)
-            //{
-            //    cancellationTokenSource.Cancel();
-            //    Move();
-            //    bonus = false;
-            //    cancellationTokenSource = new CancellationTokenSource();
-            //}
-            //Thread.Sleep(100);
         }
 
         //checks if player or enemy has reached the end
